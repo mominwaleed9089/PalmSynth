@@ -7,10 +7,9 @@ struct RootView: View {
     @StateObject private var camera = CameraManager()
     @StateObject private var tracker = HandTracker()
     @StateObject private var audio = AudioEngineManager()
-    
     @State private var viewSize: CGSize = .zero
     @State private var showFilePicker = false
-    
+    @State private var showInstructions = false
     @State private var smoothedVolume: Float = 0.5
     @State private var smoothedBassDb: Float = 0.0
     @State private var holdVolume: Float = 0.5
@@ -45,6 +44,33 @@ struct RootView: View {
                 .padding(.top, 12)
                 .padding(.leading, 12)
         }
+        .overlay(alignment: .bottomTrailing){
+            Button{
+                showInstructions.toggle()
+            } label: {
+                ZStack{
+                    Circle()
+                       .fill(.black.opacity(0.08))
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(.white.opacity(0.55), lineWidth: 1.25)
+                                            )
+                                            .frame(width: 32, height: 32)
+                                            .shadow(radius: 0.5)
+                    Text("i")
+                        .font(.system(size:16, weight: .bold))
+                        .foregroundStyle(.white)
+                        .offset(y: -0.5)
+                    
+                    
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, 18)
+            .padding(.bottom, 18)
+            .zIndex(999)
+        }
+        
         .fileImporter(
             isPresented: $showFilePicker,
             allowedContentTypes: [.audio],
@@ -59,13 +85,18 @@ struct RootView: View {
                 print("File picker error:", err)
             }
         }
-        .background(
-            GeometryReader { geo in
-                Color.clear
-                    .onAppear { viewSize = geo.size }
-                    .onChange(of: geo.size) { _, new in viewSize = new }
-            }
-        )
+        .sheet(isPresented: $showInstructions) {
+                    TutorialView {
+                        showInstructions = false
+                    }
+                }
+                .background(
+                    GeometryReader { geo in
+                        Color.clear
+                            .onAppear { viewSize = geo.size }
+                            .onChange(of: geo.size) { _, new in viewSize = new }
+                    }
+                )
         .onAppear {
             camera.onFrame = { pixelBuffer, orientation in
                 tracker.process(pixelBuffer: pixelBuffer,
@@ -121,7 +152,7 @@ struct RootView: View {
             .font(.system(size: 13, weight: .semibold))
         }
         .padding(10)
-        .fixedSize(horizontal: true, vertical: true) // ✅ prevents “half-screen” expansion
+        .fixedSize(horizontal: true, vertical: true) //  prevents “half-screen” expansion even though its removed
         
         
     }
@@ -134,14 +165,13 @@ struct RootView: View {
         let left  = hands.first(where: { $0.id == 0 })
         let right = hands.first(where: { $0.id == 1 })
 
-        // Pinch hysteresis thresholds (normalized by view width)
-        // Smaller pinchNorm = tighter pinch
+        // pinch thresholds
+        // Smaller pinchNorm = tighter pinch [for volume]
         let pinchOn: Float  = 0.070
         let pinchOff: Float = 0.095
 
-        // -----------------------------
         // LEFT HAND: VOLUME by PINCH (latched)
-        // -----------------------------
+       
         if let left, viewSize.width > 1 {
 
             let pinchNorm = Float(left.pinchDistancePx / max(1, viewSize.width))
@@ -154,13 +184,13 @@ struct RootView: View {
             }
 
             if leftPinchLatched {
-                // Map pinch to volume:
-                // Tight pinch -> louder, open pinch -> quieter
+            
+                // Tight pinch increases vol
                 let vol = map(pinchNorm,
                               inMin: 0.020, inMax: 0.100,
                               outMin: 1.0, outMax: 0.0)
 
-                // Optional curve for nicer feel + smoothing
+                // curves for the right reason
                 let target = curve(vol)
                 holdVolume = smooth(holdVolume, clamp(target, 0, 1), alpha: 0.24)
 
@@ -187,7 +217,7 @@ struct RootView: View {
             }
 
             if rightPinchLatched {
-                // Tight pinch -> more bass, open pinch -> less bass
+                // Tight pinch more bass
                 let bassDb = map(pinchNorm,
                                  inMin: 0.020, inMax: 0.090,
                                  outMin: 12.0, outMax: -10.0)
@@ -218,7 +248,7 @@ struct RootView: View {
     // Dead zone around the current value to avoid jitter changes.
     // This assumes x is already 0..1.
     private func applyDeadZone(_ x: Float, deadZone: Float) -> Float {
-        // squash a small area around each value (simple and effective)
+       
         // if you want deadzone around a fixed center, do that instead
         return round(x / deadZone) * deadZone
     }

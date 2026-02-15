@@ -138,10 +138,10 @@ final class AudioEngineManager: ObservableObject {
         // Only matters in sandbox. If not sandboxed, harmless.
         if url.startAccessingSecurityScopedResource() {
             scopedURL = url
-            print("✅ Security-scoped access granted")
+            print(" Security-scoped access granted")
         } else {
             scopedURL = nil
-            print("⚠️ Could not start security-scoped access (may still work if not sandboxed)")
+            print(" Could not start security-scoped access (may still work if not sandboxed)")
         }
     }
 
@@ -149,7 +149,7 @@ final class AudioEngineManager: ObservableObject {
         if let u = scopedURL {
             u.stopAccessingSecurityScopedResource()
             scopedURL = nil
-            print("🛑 Security-scoped access stopped")
+            print(" Security-scoped access stopped")
         }
     }
 }

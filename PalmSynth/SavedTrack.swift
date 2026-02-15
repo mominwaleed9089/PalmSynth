@@ -1,23 +1,14 @@
-//
-//  SavedTrack.swift
-//  PalmSynth
-//
-//  Created by Mo on 15/02/2026.
-//
-
-
 import Foundation
 import Combine
 import UniformTypeIdentifiers
 
-// MARK: - Saved Track Model (local library item)
 struct SavedTrack: Identifiable, Codable, Equatable {
     let id: UUID
     var name: String
     var localFilename: String
 }
 
-// MARK: - SynthEngine (stub for macOS demo)
+// SynthEngine (stub for macOS demo)
 // This compiles on macOS and iOS but does NOT try to manage AVAudioSession on macOS.
 final class SynthEngine: ObservableObject {
     @Published private(set) var isPlaying: Bool = false

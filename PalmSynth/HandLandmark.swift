@@ -13,7 +13,7 @@ struct HandLandmark: Identifiable, Hashable {
 }
 
 struct HandPose: Identifiable {
-    let id: Int                 // stable track id: 0 or 1
+    let id: Int
     let landmarks: [HandLandmark]
     let confidenceAvg: CGFloat
     let pinchDistancePx: CGFloat
@@ -27,7 +27,7 @@ final class HandTracker: ObservableObject {
     @Published private(set) var hands: [HandPose] = []
     @Published private(set) var trackingOK: Bool = false
 
-    // DEBUG
+    // DEBUG thing
     @Published private(set) var visionRuns: Int = 0
     @Published private(set) var visionResults: Int = 0
     @Published private(set) var lastVisionError: String = ""
