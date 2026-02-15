@@ -13,6 +13,8 @@ hand tracking to control audio playback using natural gestures.
 • Left-hand pinch controls volume
 • Right-hand pinch controls bass (low-shelf EQ)
 • Real-time skeletal hand overlay
+<img width="891" height="434" alt="Screenshot 2026-02-15 at 2 45 22 PM" src="https://github.com/user-attachments/assets/f05f9c6e-72f6-4355-a5b7-ac4b55a6e46d" />
+
 • Local MP3 file selection
 • Low-latency AVAudioEngine playback
 • Gesture smoothing and hysteresis for stability
