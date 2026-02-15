@@ -1,7 +1,7 @@
 This is a demo project for a fun idea i had, playing with music inspired by the BMW air control knob thing. Right now it only controls a couple of settings, yes it's a bit buggy but gets the job dojne nicely.
 It is only a MacOs running Demo.
 
-*PalmSynth - Real-Time Hand Gesture Audio*
+*PalmSynth - Use real time hand movement to control audio
 
 Controller
 Overview
